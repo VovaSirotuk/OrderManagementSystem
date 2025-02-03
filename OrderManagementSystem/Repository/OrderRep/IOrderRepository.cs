@@ -6,7 +6,7 @@ namespace OrderManagementSystem.Repository.OrderRep
     {
         Task<IEnumerable<Order>> GetOrdersAsync();
         Task<Order> GetOrderByIdAsync(int id);
-        Task<IQueryable<Order>> GetQueryableOrdersAsync();
+        IQueryable<Order> GetQueryableOrders();
         Task InsertOrderAsync(Order order);
         Task DeleteOrderByIdAsync(int id);
         void UpdateOrder(Order order);

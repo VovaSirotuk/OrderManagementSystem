@@ -5,7 +5,7 @@ namespace OrderManagementSystem.Repository.CustomerRep
     {
         Task<IEnumerable<Customer>> GetCustomersAsync();
         Task<Customer> GetCustomerByIdAsync(int id);
-        Task<IQueryable<Customer>> GetQueryableCustomersAsync();
+        IQueryable<Customer> GetQueryableCustomers();
         Task InsertCustomerAsync(Customer customer);
         Task DeleteCustomerByIdAsync(int id);
         void UpdateCustomer(Customer customer);

@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using OrderManagementSystem.DTOs.CustomerDTOs;
 using OrderManagementSystem.DTOs.OrderDTOs;
+using OrderManagementSystem.DTOs.OrderItemDTOs;
 using OrderManagementSystem.Models;
 
 namespace OrderManagementSystem.Mapping
@@ -14,6 +15,8 @@ namespace OrderManagementSystem.Mapping
             CreateMap<Customer, CustomersOrderDTO>().ReverseMap();
             CreateMap<Order, OrderDTO>().ReverseMap();
             CreateMap<Order, InsertOrderDTO>().ReverseMap();
+            CreateMap<OrderItem, OrderItemDTO>().ReverseMap();
+            CreateMap<OrderItem, InsertOrderItemDTO>().ReverseMap();
         }
     }
 }

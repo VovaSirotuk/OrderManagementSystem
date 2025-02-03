@@ -17,7 +17,7 @@ namespace OrderManagementSystem.Repository.CustomerRep
         {
             return await context.customers.ToListAsync();
         }
-        public async Task<IQueryable<Customer>> GetQueryableCustomersAsync()
+        public IQueryable<Customer> GetQueryableCustomers()
         {
             return context.customers ;
         }

@@ -6,6 +6,8 @@ using OrderManagementSystem.Models;
 using OrderManagementSystem.Mapping;
 using OrderManagementSystem.Service.OrderService;
 using OrderManagementSystem.Repository.OrderRep;
+using OrderManagementSystem.Repository.OrderItemRepository;
+using OrderManagementSystem.Service.OrderItemService;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -21,6 +23,10 @@ builder.Services.AddScoped<ICustomerService, CustomerService>();
 
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 builder.Services.AddScoped<IOrderService, OrderService>();
+
+builder.Services.AddScoped<IOrderItemsRepository, OrderItemRepository>();
+builder.Services.AddScoped<IOrderItemService, OrderItemService>();
+
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 var app = builder.Build();
 

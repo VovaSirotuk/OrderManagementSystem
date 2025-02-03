@@ -35,22 +35,19 @@ namespace OrderManagementSystem.Service.CustomerSer
 
         public async Task<IEnumerable<CustomersOrderDTO>> GetCustomersOrdersAsync() 
         {
-            var customers = await repository.GetQueryableCustomersAsync();
-            var orders = await orderRepository.GetQueryableOrdersAsync();
-            var customersOrders = customers.GroupJoin(
-                orders,
-                c => c.Id,
-                o => o.CustomerId,
-                (c, customersOrders) => new CustomersOrderDTO
-                {
-                    Id = c.Id,
-                    Name = c.Name,
-                    Email = c.Email,
-                    Phone = c.Phone,
-                    TotalOfOrder = customersOrders.Count()
+            var query = from c in repository.GetQueryableCustomers()
+                        join o in orderRepository.GetQueryableOrders()
+                        on c.Id equals o.CustomerId into customerOrders
+                        select new CustomersOrderDTO
+                        {
+                            Id = c.Id,
+                            Name = c.Name,
+                            Email = c.Email,
+                            Phone = c.Phone,
+                            TotalOfOrder = customerOrders.Count()
+                        };
 
-                });
-            return customersOrders;
+            return await query.ToListAsync();
         }
         public async Task<CustomerDTO> InsertCustomerAsync(InsertCustomerDTO insertCustomerDTO)
         {

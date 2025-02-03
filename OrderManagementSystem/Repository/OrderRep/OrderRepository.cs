@@ -17,10 +17,10 @@ namespace OrderManagementSystem.Repository.OrderRep
 
             return await context.orders.ToListAsync();
         }
-        public async Task<IQueryable<Order>> GetQueryableOrdersAsync()
+        public IQueryable<Order> GetQueryableOrders()
         {
 
-            return context.orders ;
+            return context.orders;
         }
         public async Task<Order> GetOrderByIdAsync(int id) 
         {

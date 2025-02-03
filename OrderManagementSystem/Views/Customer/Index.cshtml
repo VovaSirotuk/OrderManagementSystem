@@ -71,8 +71,11 @@
                     var currentText = $(td).text(); // Поточний текст у клітинці
                     $(td).html('<input type="text" class="form-control" value="' + currentText + '" />'); // Заміна тексту на поле для вводу
                 }
+                
             });
+            
             $(this).toggleClass('edit btn-primary save btn-success').text('Save'); // Зміна кнопки "Edit" на "Save"
+            $('#customers-table').DataTable().ajax.reload();
         });
 
         // Подія "click" для кнопки "Save"
@@ -148,8 +151,7 @@
                     success: function (response) {
                         if (response.success) {
                             row.remove(); // Якщо видалення успішне, видаляємо рядок з таблиці
-                            let table = $('#customers-table').DataTable();
-                            table.row($("tr[data-id='" + id + "']")).remove().draw();
+                            $('#customers-table').DataTable().ajax.reload();
                         } else {
                             alert('Error deleting record: ' + response.errorMessage); // Повідомлення про помилку
                         }

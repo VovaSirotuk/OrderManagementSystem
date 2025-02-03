@@ -9,9 +9,9 @@ namespace OrderManagementSystem.Controllers
     public class OrderController : Controller
     {
         private readonly IOrderService service;
-        private readonly ILogger<HomeController> _logger;
+        private readonly ILogger<OrderController> _logger;
 
-        public OrderController(ILogger<HomeController> logger, IOrderService service)
+        public OrderController(ILogger<OrderController> logger, IOrderService service)
         {
             this.service = service;
             _logger = logger;

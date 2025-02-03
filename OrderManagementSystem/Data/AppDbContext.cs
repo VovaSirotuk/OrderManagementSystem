@@ -22,7 +22,7 @@ namespace OrderManagementSystem.Data
             
             modelBuilder.Entity<OrderItem>()
                 .Property(p => p.Total)
-                .HasComputedColumnSql("[Quantity] + [Price]", stored: true);
+                .HasComputedColumnSql("[Quantity] * [Price]", stored: true);
             
             modelBuilder.Entity<OrderItem>()
                 .Property(p => p.Total)
