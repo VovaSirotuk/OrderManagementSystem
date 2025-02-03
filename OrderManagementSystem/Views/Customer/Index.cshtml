@@ -1,0 +1,220 @@
+﻿@model IEnumerable<OrderManagementSystem.DTOs.CustomerDTOs.CustomerDTO>
+<head>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+</head>
+<div class="container mt-4">
+    <h2>Contact List</h2>
+    <tr><button class="btn btn-primary add">AddCustomer</button></tr>
+    <table id="customers-table" class="table table-striped table-bordered">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+       
+            <tr class="addRow">
+                <td><input type="text" class="form-control new-name" placeholder="Enter Name"></td>
+                <td><input type="email" class="form-control new-email" placeholder="Enter Email"></td>
+                <td><input type="text" class="form-control new-phone" placeholder="Enter Phone"></td>
+                <td>
+                    <button class="btn btn-success save-new">Save</button>
+                    <button class="btn btn-secondary cancel-new">Cancel</button>
+                </td>
+            </tr>
+            @foreach (var customer in Model)
+            {
+                <tr data-id ="@customer.Id">
+                    <td>@customer.Name</td>
+                    <td>@customer.Email</td>
+                    <td>@customer.Phone</td>
+                    <td>
+                        <button class="btn btn-primary edit">Edit</button>
+                        <button class="btn btn-danger delete">Delete</button>
+                    </td>
+                </tr>
+            } 
+        </tbody>
+    </table>
+</div>
+<script>
+    $(document).ready(function () {
+
+        console.log("fsfd");
+        
+        $('#customers-table').DataTable({
+                "paging": true,        // Пагінація
+                "searching": true,     // Фільтрація
+                "ordering": true,      // Сортування
+                "info": true,          // Показує кількість записів
+                "lengthChange": true   // Дозволяє змінювати кількість рядків на сторінці
+        });
+        
+        console.log($.fn.DataTable.isDataTable('#customers-table'));
+
+        console.log("fsfd");
+
+        
+        
+    });
+    $(document).ready(function () {
+        $('.addRow').hide();
+        // Подія "click" для кнопки "Edit"
+        // Змінює вміст клітинок на текстові поля для інлайн-редагування
+        $(document).on('click', '.edit', function () {
+            var row = $(this).closest('tr'); // Отримуємо поточний рядок
+            row.find('td').each(function (index, td) {
+                if (index < 3) { // Перші 3 клітинок є полями для редагування
+                    var currentText = $(td).text(); // Поточний текст у клітинці
+                    $(td).html('<input type="text" class="form-control" value="' + currentText + '" />'); // Заміна тексту на поле для вводу
+                }
+            });
+            $(this).toggleClass('edit btn-primary save btn-success').text('Save'); // Зміна кнопки "Edit" на "Save"
+        });
+
+        // Подія "click" для кнопки "Save"
+        // Зберігає змінені дані та надсилає їх на сервер через AJAX
+        $(document).on('click', '.save', function () {
+            var row = $(this).closest('tr'); // Отримуємо поточний рядок
+            var id = row.attr('data-id'); // Отримуємо ID з атрибуту рядка
+
+            var name = row.find('td:eq(0) input').val();
+            var email = row.find('td:eq(1) input').val();
+            var phone = row.find('td:eq(2) input').val();
+            
+            if (name.trim() === '') {
+                alert('Name is required');
+                return false;
+            }
+
+            
+            // Перевірка поля "Phone"
+            var phonePattern = /^[+]?[\d\s-]{10,15}$/;
+            if (!phonePattern.test(phone)) {
+                alert('Please enter a valid phone number');
+                return false;
+            }
+
+            
+            var updatedData = {
+                Name: name,         // Нове значення поля "Name"
+                Email: email,        // Нове значення поля "Email"
+                Phone: phone    // Нове значення поля "Phone
+            };
+            console.log(updatedData);
+
+            // AJAX-запит на сервер для оновлення даних
+            $.ajax({
+                url: '@Url.Action("UpdateCustomer", "Customer")/' + id,
+                type: 'POST',
+                data: {
+                    Id: id,
+                    Name: updatedData.Name,
+                    Email: updatedData.Email,
+                    Phone: updatedData.Phone
+                    
+                }, // Передача даних у форматі JSON
+                success: function (response) {
+                    if (response.success) {
+                        // Якщо оновлення успішне, повертаємо оновлені дані до таблиці
+                        row.find('td').each(function (index, td) {
+                            if (index < 3) {
+                                $(td).html($(td).find('input').val()); // Виводимо збережене значення
+                            }
+                        });
+                        // Зміна кнопки "Save" назад на "Edit"
+                        row.find('.save').toggleClass('save btn-success edit btn-primary').text('Edit');
+                    } else {
+                        // Повідомлення про помилку, якщо щось пішло не так
+                        alert('Error updating data: ' + response.errorMessage);
+                    }
+                }
+            });
+        });
+
+        // Подія "click" для кнопки "Delete"
+        // Видаляє рядок з бази даних через AJAX
+        $(document).on('click', '.delete', function () {
+            var row = $(this).closest('tr'); // Отримуємо поточний рядок
+            var id = row.attr('data-id'); // Отримуємо ID з атрибуту рядка
+            if (confirm('Are you sure you want to delete this record?')) {
+                // Підтвердження видалення та виклик AJAX-запиту
+                $.ajax({
+                    url: '@Url.Action("DeleteCustomer", "Customer")/' + id, // Виклик контролера для видалення
+                    type: 'DELETE',
+                    success: function (response) {
+                        if (response.success) {
+                            row.remove(); // Якщо видалення успішне, видаляємо рядок з таблиці
+                            let table = $('#customers-table').DataTable();
+                            table.row($("tr[data-id='" + id + "']")).remove().draw();
+                        } else {
+                            alert('Error deleting record: ' + response.errorMessage); // Повідомлення про помилку
+                        }
+                    }
+                });
+            }
+        });
+
+
+        $(document).on('click', '.add', function () {
+            $('.add').prop('disabled', true);// Заблокувати кнопку
+            $('.addRow').show();
+        });
+
+        $(document).on('click', '.cancel-new', function () {
+            $('.addRow').hide();
+            $('.add').prop('disabled', false);
+            $('.new-name').val('');
+            $('.new-email').val('');
+            $('.new-phone').val('');
+        });
+
+        $(document).on('click', '.save-new', function() {
+                    
+            var name = $('.new-name').val().trim();
+            var email = $('.new-email').val().trim();
+            var phone = $('.new-phone').val().trim();
+            
+            if (name === '' || email === '' || phone === '') {
+                alert("All fields are required!");
+                return;
+            }
+
+            $.ajax({
+                url: '@Url.Action("InsertCustomer", "Customer")',
+                type: 'POST',
+                data: {
+                    Name: name,
+                    Email: email,
+                    Phone: phone
+                },
+                success: function (response) {
+                    if (response.success) {
+                        console.log(response);
+                        $('.add').prop('disabled', false);
+                        $('.addRow').hide();
+                        $('.new-name').val('');
+                        $('.new-email').val('');
+                        $('.new-phone').val('');
+                        alert("successfuly added");
+                                                
+                        var table = $('#customers-table').DataTable();
+                        
+                        table.row.add([
+                            response.customer.name,
+                            response.customer.email,
+                            response.customer.phone,
+                            '<button class="btn btn-primary edit">Edit</button>' +
+                            '<button class="btn btn-danger delete">Delete</button>'
+                        ]).draw(false);
+                    } else {
+                        alert('Error: ' + response.errorMessage);
+                    }
+                }
+            });
+        });
+    });
+</script>
